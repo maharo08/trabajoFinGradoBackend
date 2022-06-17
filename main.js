@@ -1,23 +1,30 @@
-var nodemailer = require('nodemailer');
-var express = require('express');
-var app = express();
+const nodemailer = require('nodemailer');
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const cors = require('cors');
+
+app.use(cors())
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.post("/send-email", (request, response) => {
-    var trasporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
+    const contactData = request.body;
+    const trasporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
         port: 587,
-        secure: "STARTTLS",
+        secure: false,
         auth: {
-            user: "jermaine.damore76@ethereal.email",
-            pass: 'KDkZZbJnZmSK5UEkXS',
+            user: "gymserrharo@gmail.com",
+            pass: 'qbwuavfmhoxcgzgr',
         },
     });
 
-    var mailOptions = {
+    const mailOptions = {
         from: "Remitente",
         to: "gymserrharo@gmail.com",
-        subject: "Enviado desde nodemailer",
-        text: "¡Hola mundo!",
+        subject: `${contactData.name} ${contactData.email}`,
+        text: `${contactData.message}`,
     };
 
     trasporter.sendMail(mailOptions, (error, info) => {
@@ -28,7 +35,7 @@ app.post("/send-email", (request, response) => {
 
         else {
             console.log("Email enviado.");
-            response.status(200).jsonp(request.body);
+            response.status(200).jsonp({status: 200, data: {message: "Email sending"}});
         }
     });
 });
